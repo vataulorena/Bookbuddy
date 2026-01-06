@@ -1,0 +1,7 @@
+package com.bookbuddy.bookbuddy.repository;
+
+import com.bookbuddy.bookbuddy.entity.BookCopy;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface BookCopyRepository extends JpaRepository<BookCopy, Long> {
+}
