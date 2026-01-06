@@ -1,6 +1,7 @@
 package com.bookbuddy.bookbuddy.controller;
 
 import com.bookbuddy.bookbuddy.dto.user.CreateUserRequest;
+import com.bookbuddy.bookbuddy.dto.user.UserResponse;
 import com.bookbuddy.bookbuddy.entity.User;
 import com.bookbuddy.bookbuddy.service.UserService;
 import jakarta.validation.Valid;
@@ -26,7 +27,7 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> list() {
-        return userService.list();
+    public List<UserResponse> list() {
+        return userService.listWithLoans();
     }
 }
