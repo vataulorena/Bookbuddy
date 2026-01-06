@@ -52,48 +52,62 @@ Aplicația expune un API REST, documentat cu Swagger, utilizează H2 Database pe
     - Loan
 
 2. Relații între entități
-      Author 1 → N Book
-      Category 1 → N Book
-      Book 1 → N BookCopy
-      User 1 → N Loan
-      BookCopy 1 → N Loan
+      - Author 1 → N Book
+      - Category 1 → N Book
+      - Book 1 → N BookCopy
+      - User 1 → N Loan
+      - BookCopy 1 → N Loan
 
 ---
 
 ## 5. Ghid de utilizare a aplicației
 
-Pasul 1: Pornirea aplicației
+- ### Pasul 1: Pornirea aplicației
 
-    - Pornește aplicația rulând clasa BookbuddyApplication
-    - Deschide browser-ul și accesează:
-            http://localhost:8081/swagger-ui/index.html
-    - Swagger UI va afișa toate endpoint-urile disponibile.
-
-Pasul 2: Crearea datelor de bază
-    - Pentru a putea crea cărți și împrumuturi, este necesar să existe autori, categorii și utilizatori.
+    Pornește aplicația rulând clasa **BookbuddyApplication**
   
-  2.1 Creare autor
-    Endpoint: POST /api/authors
-    Body:
-    ```json
-    {
-      "name": "George Orwell"
-    }
-    ```
-    - Reține id-ul autorului returnat.
+    Deschide browser-ul și accesează:
+      http://localhost:8081/swagger-ui/index.html
+  
+    Swagger UI va afișa toate endpoint-urile disponibile.
 
-  2.2 Creare categorie
+
+- ### Pasul 2: Crearea datelor de bază
+
+     Pentru a putea crea cărți și împrumuturi, este necesar să existe autori, categorii și utilizatori.
+  
+  **2.1 Creare autor**
+
+     Endpoint: POST /api/authors
+
+     Body:
+
+  ```json
+  {
+  "name": "George Orwell"
+  }
+  ```
+  
+  Reține id-ul autorului returnat.
+
+
+  **2.2 Creare categorie**
+  
     Endpoint: POST /api/categories
+  
     Body:
     ```json
   {
     "name": "Distopie"
   }
     ```
-  - Reține id-ul categoriei.
+  Reține id-ul categoriei.
 
-  2.3 Creare utilizator
+
+  **2.3 Creare utilizator**
+  
     Endpoint: POST /api/users
+  
     Body:
     ```json
   {
@@ -101,66 +115,89 @@ Pasul 2: Crearea datelor de bază
     "email": "ana@example.com"
   }
     ```
-  - Reține id-ul utilizatorului.
+     Reține id-ul utilizatorului.
 
 
-Pasul 3: Gestionarea cărților
-  3.1 Creare carte
-    Endpoint: POST /api/books
-    Body:
+- ### Pasul 3: Gestionarea cărților
+  
+     **3.1 Creare carte**
+  
+     Endpoint: POST /api/books
+    
+     Body:
+   
     ```json
-  {
-    "title": "1984",
-    "isbn": "9780451524935",
-    "description": "Roman distopic",
-    "authorId": 1,
-    "categoryId": 1
-  }
+      {
+        "title": "1984",
+        "isbn": "9780451524935",
+        "description": "Roman distopic",
+        "authorId": 1,
+        "categoryId": 1
+      }
     ```
-  - Cartea este salvată în sistem.
 
-  3.2 Listare cărți
-    Endpoint: GET /api/books
-      - Returnează lista titlurilor de cărți existente.
+     Cartea este salvată în sistem.
 
-
-Pasul 4: Gestionarea exemplarelor
-  4.1 Adăugare exemplar pentru o carte
-    Endpoint: POST /api/books/{bookId}/copies
-    Exemplu:
-```json
-{
-  "available": true
-}
-```
-  - Exemplarul este marcat ca disponibil.
+     **3.2 Listare cărți**
+  
+     Endpoint: GET /api/books
+    
+     Returnează lista titlurilor de cărți existente.
 
 
-Pasul 5: Împrumutarea unei cărți
-  5.1 Creare împrumut
-    Endpoint: POST /api/loans
-    Body:
-```json
-{
-  "userId": 1,
-  "bookCopyId": 1,
-  "dueDate": "2026-01-20"
-}
-```
-  - Împrumutul este creat
-  - Exemplarul devine indisponibil automat
+- ### Pasul 4: Gestionarea exemplarelor
+  
+  **4.1 Adăugare exemplar pentru o carte**
+  
+  Endpoint: POST /api/books/{bookId}/copies
+
+  Exemplu:
+   ```json
+    {
+      "available": true
+    }
+     ```
+   Exemplarul este marcat ca disponibil.
 
 
-Pasul 6: Vizualizarea utilizatorilor și a împrumuturilor
+- ### Pasul 5: Împrumutarea unei cărți
+  
+  **5.1 Creare împrumut**
+    
+  Endpoint: POST /api/loans
+
+
+  Body:
+  
+  ```json
+      {
+        "userId": 1,
+        "bookCopyId": 1,
+        "dueDate": "2026-01-20"
+      }
+  ```
+  
+  Împrumutul este creat
+  Exemplarul devine indisponibil automat
+
+
+- ### Pasul 6: Vizualizarea utilizatorilor și a împrumuturilor
 
   Endpoint: GET /api/users
+
   Returnează:
-    - utilizatorii
-    - lista de împrumuturi asociate fiecăruia
+  
+  - utilizatorii
+    
+  - lista de împrumuturi asociate fiecăruia
 
 
-Pasul 7: Returnarea unei cărți
-  7.1 Returnare împrumut
-    Endpoint: POST /api/loans/{loanId}/return
-      - imprumutul este închis
-      - exemplarul devine din nou disponibil
+- ### Pasul 7: Returnarea unei cărți
+  
+  **7.1 Returnare împrumut**
+  
+  Endpoint: POST /api/loans/{loanId}/return
+
+  - imprumutul este închis
+
+  - exemplarul devine din nou disponibil
