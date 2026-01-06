@@ -63,6 +63,7 @@ Aplicația expune un API REST, documentat cu Swagger, utilizează H2 Database pe
 ## 5. Ghid de utilizare a aplicației
 
 Pasul 1: Pornirea aplicației
+
     - Pornește aplicația rulând clasa BookbuddyApplication
     - Deschide browser-ul și accesează:
             http://localhost:8081/swagger-ui/index.html
