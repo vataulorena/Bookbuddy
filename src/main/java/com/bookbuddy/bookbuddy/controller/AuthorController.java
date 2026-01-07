@@ -1,5 +1,6 @@
 package com.bookbuddy.bookbuddy.controller;
 
+import com.bookbuddy.bookbuddy.dto.author.AuthorResponse;
 import com.bookbuddy.bookbuddy.dto.author.CreateAuthorRequest;
 import com.bookbuddy.bookbuddy.entity.Author;
 import com.bookbuddy.bookbuddy.service.AuthorService;
@@ -26,7 +27,7 @@ public class AuthorController {
     }
 
     @GetMapping
-    public List<Author> list() {
+    public List<AuthorResponse> list() {
         return authorService.list();
     }
 }

@@ -1,5 +1,6 @@
 package com.bookbuddy.bookbuddy.service;
 
+import com.bookbuddy.bookbuddy.dto.category.CategoryResponse;
 import com.bookbuddy.bookbuddy.dto.category.CreateCategoryRequest;
 import com.bookbuddy.bookbuddy.entity.Category;
 import com.bookbuddy.bookbuddy.repository.CategoryRepository;
@@ -22,7 +23,10 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    public List<Category> list() {
-        return categoryRepository.findAll();
+    public List<CategoryResponse> list() {
+        return categoryRepository.findAll()
+                .stream()
+                .map(c -> new CategoryResponse(c.getId(), c.getName()))
+                .toList();
     }
 }

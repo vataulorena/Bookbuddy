@@ -1,6 +1,7 @@
 package com.bookbuddy.bookbuddy.controller;
 
 import com.bookbuddy.bookbuddy.dto.loan.CreateLoanRequest;
+import com.bookbuddy.bookbuddy.dto.loan.LoanResponse;
 import com.bookbuddy.bookbuddy.service.LoanCreateService;
 import com.bookbuddy.bookbuddy.service.LoanReturnService;
 import jakarta.validation.Valid;
@@ -21,8 +22,8 @@ public class LoanController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createLoan(@Valid @RequestBody CreateLoanRequest request) {
-        loanCreateService.create(request);
+    public LoanResponse createLoan(@Valid @RequestBody CreateLoanRequest request) {
+        return loanCreateService.create(request);
     }
 
     @PostMapping("/{loanId}/return")

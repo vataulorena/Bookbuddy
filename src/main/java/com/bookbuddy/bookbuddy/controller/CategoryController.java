@@ -1,5 +1,6 @@
 package com.bookbuddy.bookbuddy.controller;
 
+import com.bookbuddy.bookbuddy.dto.category.CategoryResponse;
 import com.bookbuddy.bookbuddy.dto.category.CreateCategoryRequest;
 import com.bookbuddy.bookbuddy.entity.Category;
 import com.bookbuddy.bookbuddy.service.CategoryService;
@@ -26,7 +27,7 @@ public class CategoryController {
     }
 
     @GetMapping
-    public List<Category> list() {
+    public List<CategoryResponse> list() {
         return categoryService.list();
     }
 }

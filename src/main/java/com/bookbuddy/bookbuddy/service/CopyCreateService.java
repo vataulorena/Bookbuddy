@@ -1,5 +1,6 @@
 package com.bookbuddy.bookbuddy.service;
 
+import com.bookbuddy.bookbuddy.dto.copy.BookCopyResponse;
 import com.bookbuddy.bookbuddy.dto.copy.CreateBookCopyRequest;
 import com.bookbuddy.bookbuddy.entity.Book;
 import com.bookbuddy.bookbuddy.entity.BookCopy;
@@ -19,7 +20,7 @@ public class CopyCreateService {
         this.bookCopyRepository = bookCopyRepository;
     }
 
-    public void addCopy(Long bookId, CreateBookCopyRequest request) {
+    public BookCopyResponse addCopy(Long bookId, CreateBookCopyRequest request) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new BusinessException("Carte inexistenta"));
 
@@ -27,6 +28,8 @@ public class CopyCreateService {
         copy.setBook(book);
         copy.setAvailable(Boolean.TRUE.equals(request.available()));
 
-        bookCopyRepository.save(copy);
+        BookCopy saved = bookCopyRepository.save(copy);
+
+        return new BookCopyResponse(saved.getId(), saved.isAvailable(), bookId);
     }
 }

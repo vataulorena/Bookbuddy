@@ -1,5 +1,6 @@
 package com.bookbuddy.bookbuddy.service;
 
+import com.bookbuddy.bookbuddy.dto.author.AuthorResponse;
 import com.bookbuddy.bookbuddy.dto.author.CreateAuthorRequest;
 import com.bookbuddy.bookbuddy.entity.Author;
 import com.bookbuddy.bookbuddy.repository.AuthorRepository;
@@ -22,7 +23,20 @@ public class AuthorService {
         return authorRepository.save(author);
     }
 
-    public List<Author> list() {
-        return authorRepository.findAll();
+    public List<AuthorResponse> list() {
+        return authorRepository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    private AuthorResponse toResponse(Author author) {
+        List<AuthorResponse.BookSummary> books = author.getBooks() == null
+                ? List.of()
+                : author.getBooks().stream()
+                .map(b -> new AuthorResponse.BookSummary(b.getId(), b.getTitle(), b.getIsbn()))
+                .toList();
+
+        return new AuthorResponse(author.getId(), author.getName(), books);
     }
 }

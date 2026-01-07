@@ -1,6 +1,7 @@
 package com.bookbuddy.bookbuddy.service;
 
 import com.bookbuddy.bookbuddy.dto.loan.CreateLoanRequest;
+import com.bookbuddy.bookbuddy.dto.loan.LoanResponse;
 import com.bookbuddy.bookbuddy.entity.BookCopy;
 import com.bookbuddy.bookbuddy.entity.Loan;
 import com.bookbuddy.bookbuddy.entity.User;
@@ -26,7 +27,7 @@ public class LoanCreateService {
         this.loanRepository = loanRepository;
     }
 
-    public void create(CreateLoanRequest request) {
+    public LoanResponse create(CreateLoanRequest request) {
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new BusinessException("User inexistent"));
 
@@ -37,7 +38,6 @@ public class LoanCreateService {
             throw new BusinessException("Exemplarul nu este disponibil");
         }
 
-        //marcam exemplarul indisponibil
         copy.setAvailable(false);
         bookCopyRepository.save(copy);
 
@@ -48,6 +48,15 @@ public class LoanCreateService {
         loan.setDueDate(request.dueDate());
         loan.setReturnDate(null);
 
-        loanRepository.save(loan);
+        Loan saved = loanRepository.save(loan);
+
+        return new LoanResponse(
+                saved.getId(),
+                user.getId(),
+                copy.getId(),
+                saved.getStartDate(),
+                saved.getDueDate(),
+                saved.getReturnDate()
+        );
     }
 }

@@ -1,5 +1,6 @@
 package com.bookbuddy.bookbuddy.service;
 
+import com.bookbuddy.bookbuddy.dto.book.BookResponse;
 import com.bookbuddy.bookbuddy.dto.book.CreateBookRequest;
 import com.bookbuddy.bookbuddy.entity.Author;
 import com.bookbuddy.bookbuddy.entity.Book;
@@ -24,7 +25,7 @@ public class BookCreateService {
         this.categoryRepository = categoryRepository;
     }
 
-    public void create(CreateBookRequest request) {
+    public BookResponse create(CreateBookRequest request) {
         Author author = authorRepository.findById(request.authorId())
                 .orElseThrow(() -> new BusinessException("Autor inexistent"));
 
@@ -38,6 +39,8 @@ public class BookCreateService {
         book.setAuthor(author);
         book.setCategory(category);
 
-        bookRepository.save(book);
+        Book saved = bookRepository.save(book);
+
+        return new BookResponse(saved.getId(), saved.getTitle(), saved.getIsbn());
     }
 }

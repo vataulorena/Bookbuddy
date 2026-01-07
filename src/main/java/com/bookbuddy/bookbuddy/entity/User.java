@@ -1,3 +1,5 @@
+
+
 package com.bookbuddy.bookbuddy.entity;
 
 import jakarta.persistence.*;

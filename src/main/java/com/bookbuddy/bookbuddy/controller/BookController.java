@@ -1,5 +1,6 @@
 package com.bookbuddy.bookbuddy.controller;
 
+import com.bookbuddy.bookbuddy.dto.book.BookResponse;
 import com.bookbuddy.bookbuddy.dto.book.CreateBookRequest;
 import com.bookbuddy.bookbuddy.service.BookCreateService;
 import com.bookbuddy.bookbuddy.service.BookListService;
@@ -23,8 +24,8 @@ public class BookController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createBook(@Valid @RequestBody CreateBookRequest request) {
-        bookCreateService.create(request);
+    public BookResponse createBook(@Valid @RequestBody CreateBookRequest request) {
+        return bookCreateService.create(request);
     }
 
     @GetMapping
