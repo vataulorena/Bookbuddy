@@ -1,6 +1,7 @@
 package com.bookbuddy.bookbuddy.controller;
 
 import com.bookbuddy.bookbuddy.dto.loan.CreateLoanRequest;
+import com.bookbuddy.bookbuddy.dto.loan.LoanResponse;
 import com.bookbuddy.bookbuddy.service.LoanCreateService;
 import com.bookbuddy.bookbuddy.service.LoanReturnService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,26 +21,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(LoanController.class)
 class LoanControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @Autowired private MockMvc mockMvc;
+    @Autowired private ObjectMapper objectMapper;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @MockitoBean
-    private LoanCreateService loanCreateService;
-
-    @MockitoBean
-    private LoanReturnService loanReturnService;
+    @MockitoBean private LoanCreateService loanCreateService;
+    @MockitoBean private LoanReturnService loanReturnService;
 
     @Test
-    void createLoan_shouldReturn201() throws Exception {
+    void createLoan_shouldReturn201_andId() throws Exception {
         CreateLoanRequest req = new CreateLoanRequest(1L, 2L, LocalDate.now().plusDays(7));
+
+        when(loanCreateService.create(any())).thenReturn(new LoanResponse(
+                99L, 1L, 2L, LocalDate.now(), req.dueDate(), null
+        ));
 
         mockMvc.perform(post("/api/loans")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(99));
 
         verify(loanCreateService).create(any(CreateLoanRequest.class));
     }

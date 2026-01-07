@@ -1,5 +1,6 @@
 package com.bookbuddy.bookbuddy.controller;
 
+import com.bookbuddy.bookbuddy.dto.category.CategoryResponse;
 import com.bookbuddy.bookbuddy.dto.category.CreateCategoryRequest;
 import com.bookbuddy.bookbuddy.entity.Category;
 import com.bookbuddy.bookbuddy.service.CategoryService;
@@ -39,22 +40,20 @@ class CategoryControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1));
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Fantasy"));
 
         verify(categoryService).create(any(CreateCategoryRequest.class));
     }
 
     @Test
     void getCategories_shouldReturn200() throws Exception {
-        Category c = new Category();
-        c.setId(1L);
-        c.setName("Fantasy");
-
-        when(categoryService.list()).thenReturn(List.of(c));
+        when(categoryService.list()).thenReturn(List.of(new CategoryResponse(1L, "Fantasy")));
 
         mockMvc.perform(get("/api/categories"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1));
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].name").value("Fantasy"));
 
         verify(categoryService).list();
     }

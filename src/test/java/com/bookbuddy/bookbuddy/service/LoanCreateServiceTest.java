@@ -2,6 +2,7 @@ package com.bookbuddy.bookbuddy.service;
 
 import com.bookbuddy.bookbuddy.dto.loan.CreateLoanRequest;
 import com.bookbuddy.bookbuddy.entity.BookCopy;
+import com.bookbuddy.bookbuddy.entity.Loan;
 import com.bookbuddy.bookbuddy.entity.User;
 import com.bookbuddy.bookbuddy.repository.BookCopyRepository;
 import com.bookbuddy.bookbuddy.repository.LoanRepository;
@@ -25,6 +26,35 @@ class LoanCreateServiceTest {
             new LoanCreateService(userRepository, bookCopyRepository, loanRepository);
 
     @Test
+    void create_shouldThrow_whenUserNotFound() {
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+        CreateLoanRequest request = new CreateLoanRequest(1L, 10L, LocalDate.now().plusDays(7));
+
+        BusinessException ex = assertThrows(BusinessException.class, () -> service.create(request));
+        assertEquals("User inexistent", ex.getMessage());
+
+        verify(bookCopyRepository, never()).save(any());
+        verify(loanRepository, never()).save(any());
+    }
+
+    @Test
+    void create_shouldThrow_whenCopyNotFound() {
+        User user = new User();
+        user.setId(1L);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bookCopyRepository.findById(10L)).thenReturn(Optional.empty());
+
+        CreateLoanRequest request = new CreateLoanRequest(1L, 10L, LocalDate.now().plusDays(7));
+
+        BusinessException ex = assertThrows(BusinessException.class, () -> service.create(request));
+        assertEquals("Exemplar inexistent", ex.getMessage());
+
+        verify(loanRepository, never()).save(any());
+    }
+
+    @Test
     void create_shouldThrow_whenCopyNotAvailable() {
         User user = new User();
         user.setId(1L);
@@ -42,6 +72,7 @@ class LoanCreateServiceTest {
         assertEquals("Exemplarul nu este disponibil", ex.getMessage());
 
         verify(loanRepository, never()).save(any());
+        verify(bookCopyRepository, never()).save(any(BookCopy.class)); // nu trebuie sa salveze
     }
 
     @Test
@@ -56,6 +87,13 @@ class LoanCreateServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookCopyRepository.findById(10L)).thenReturn(Optional.of(copy));
 
+        // IMPORTANT: fara asta save() returneaza null si pica testul
+        when(loanRepository.save(any(Loan.class))).thenAnswer(inv -> {
+            Loan l = inv.getArgument(0);
+            l.setId(1L);
+            return l;
+        });
+
         CreateLoanRequest request = new CreateLoanRequest(1L, 10L, LocalDate.now().plusDays(7));
 
         service.create(request);
@@ -63,13 +101,15 @@ class LoanCreateServiceTest {
         assertFalse(copy.isAvailable());
         verify(bookCopyRepository).save(copy);
 
-        ArgumentCaptor<com.bookbuddy.bookbuddy.entity.Loan> captor =
-                ArgumentCaptor.forClass(com.bookbuddy.bookbuddy.entity.Loan.class);
-
+        ArgumentCaptor<Loan> captor = ArgumentCaptor.forClass(Loan.class);
         verify(loanRepository).save(captor.capture());
-        assertEquals(10L, captor.getValue().getBookCopyId());
-        assertEquals(user, captor.getValue().getUser());
-        assertNotNull(captor.getValue().getStartDate());
-        assertEquals(request.dueDate(), captor.getValue().getDueDate());
+
+        Loan savedLoan = captor.getValue();
+        assertEquals(user, savedLoan.getUser());
+        assertEquals(10L, savedLoan.getBookCopyId());
+        assertNotNull(savedLoan.getStartDate());
+        assertEquals(request.dueDate(), savedLoan.getDueDate());
+        assertNull(savedLoan.getReturnDate());
     }
+
 }

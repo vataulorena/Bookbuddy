@@ -1,5 +1,6 @@
 package com.bookbuddy.bookbuddy.service;
 
+import com.bookbuddy.bookbuddy.dto.category.CategoryResponse;
 import com.bookbuddy.bookbuddy.dto.category.CreateCategoryRequest;
 import com.bookbuddy.bookbuddy.entity.Category;
 import com.bookbuddy.bookbuddy.repository.CategoryRepository;
@@ -19,27 +20,26 @@ class CategoryServiceTest {
     @Test
     void create_shouldSaveCategoryWithName() {
         CreateCategoryRequest request = new CreateCategoryRequest("Fantasy");
-
         service.create(request);
 
         ArgumentCaptor<Category> captor = ArgumentCaptor.forClass(Category.class);
         verify(categoryRepository).save(captor.capture());
-
         assertEquals("Fantasy", captor.getValue().getName());
     }
 
     @Test
-    void list_shouldReturnAllCategories() {
+    void list_shouldReturnAllCategories_asResponses() {
         Category c = new Category();
         c.setId(1L);
         c.setName("Fantasy");
 
         when(categoryRepository.findAll()).thenReturn(List.of(c));
 
-        List<Category> result = service.list();
+        List<CategoryResponse> result = service.list();
 
         assertEquals(1, result.size());
-        assertEquals("Fantasy", result.get(0).getName());
+        assertEquals(1L, result.get(0).id());
+        assertEquals("Fantasy", result.get(0).name());
         verify(categoryRepository).findAll();
     }
 }

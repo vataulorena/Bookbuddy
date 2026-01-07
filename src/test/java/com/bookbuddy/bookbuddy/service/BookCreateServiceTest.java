@@ -1,5 +1,6 @@
 package com.bookbuddy.bookbuddy.service;
 
+import com.bookbuddy.bookbuddy.dto.book.BookResponse;
 import com.bookbuddy.bookbuddy.dto.book.CreateBookRequest;
 import com.bookbuddy.bookbuddy.entity.Author;
 import com.bookbuddy.bookbuddy.entity.Book;
@@ -25,7 +26,7 @@ class BookCreateServiceTest {
             new BookCreateService(bookRepository, authorRepository, categoryRepository);
 
     @Test
-    void create_shouldSaveBookWithAuthorAndCategory() {
+    void create_shouldSaveBookWithAuthorAndCategory_andReturnResponse() {
         Author author = new Author();
         author.setId(1L);
 
@@ -35,15 +36,17 @@ class BookCreateServiceTest {
         when(authorRepository.findById(1L)).thenReturn(Optional.of(author));
         when(categoryRepository.findById(2L)).thenReturn(Optional.of(category));
 
+        when(bookRepository.save(any())).thenAnswer(inv -> {
+            Book b = inv.getArgument(0);
+            b.setId(10L);
+            return b;
+        });
+
         CreateBookRequest req = new CreateBookRequest(
-                "1984",
-                "9780451524935",
-                "Roman distopic",
-                1L,
-                2L
+                "1984", "9780451524935", "Roman distopic", 1L, 2L
         );
 
-        service.create(req);
+        BookResponse resp = service.create(req);
 
         ArgumentCaptor<Book> captor = ArgumentCaptor.forClass(Book.class);
         verify(bookRepository).save(captor.capture());
@@ -54,6 +57,9 @@ class BookCreateServiceTest {
         assertEquals("Roman distopic", saved.getDescription());
         assertEquals(author, saved.getAuthor());
         assertEquals(category, saved.getCategory());
+
+        assertEquals(10L, resp.id());
+        assertEquals("1984", resp.title());
     }
 
     @Test
@@ -61,11 +67,7 @@ class BookCreateServiceTest {
         when(authorRepository.findById(1L)).thenReturn(Optional.empty());
 
         CreateBookRequest req = new CreateBookRequest(
-                "1984",
-                "9780451524935",
-                "Roman distopic",
-                1L,
-                2L
+                "1984", "9780451524935", "Roman distopic", 1L, 2L
         );
 
         BusinessException ex = assertThrows(BusinessException.class, () -> service.create(req));
@@ -83,11 +85,7 @@ class BookCreateServiceTest {
         when(categoryRepository.findById(2L)).thenReturn(Optional.empty());
 
         CreateBookRequest req = new CreateBookRequest(
-                "1984",
-                "9780451524935",
-                "Roman distopic",
-                1L,
-                2L
+                "1984", "9780451524935", "Roman distopic", 1L, 2L
         );
 
         BusinessException ex = assertThrows(BusinessException.class, () -> service.create(req));

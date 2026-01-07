@@ -1,5 +1,6 @@
 package com.bookbuddy.bookbuddy.controller;
 
+import com.bookbuddy.bookbuddy.dto.book.BookResponse;
 import com.bookbuddy.bookbuddy.dto.book.CreateBookRequest;
 import com.bookbuddy.bookbuddy.service.BookCreateService;
 import com.bookbuddy.bookbuddy.service.BookListService;
@@ -27,19 +28,19 @@ class BookControllerTest {
     @MockitoBean private BookListService bookListService;
 
     @Test
-    void postBooks_shouldReturn201() throws Exception {
+    void postBooks_shouldReturn201_andId() throws Exception {
         CreateBookRequest req = new CreateBookRequest(
-                "1984",
-                "9780451524935",
-                "Roman distopic",
-                1L,
-                1L
+                "1984", "9780451524935", "Roman distopic", 1L, 1L
         );
+
+        when(bookCreateService.create(any())).thenReturn(new BookResponse(1L, "1984", "9780451524935"));
 
         mockMvc.perform(post("/api/books")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.title").value("1984"));
 
         verify(bookCreateService).create(any(CreateBookRequest.class));
     }
